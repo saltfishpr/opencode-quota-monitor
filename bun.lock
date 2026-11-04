@@ -6,6 +6,7 @@
       "name": "opencode-quota-monitor",
       "dependencies": {
         "@opencode/plugin": "2.2.5",
+        "effect": "4.0.6",
       },
       "devDependencies": {
         "@types/node": "^22.0.0",

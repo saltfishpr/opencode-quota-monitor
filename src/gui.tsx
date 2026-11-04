@@ -1,9 +1,18 @@
+import { Schema } from "effect";
 import { createMemo, createSignal, onCleanup, Show } from "solid-js";
-import { createKeyed, Plugin, Slot, Style } from "@opencode/plugin/gui";
+import { createKeyed, Plugin, Slot, Store, Style } from "@opencode/plugin/gui";
 import { Quota } from "./rpc";
 import type { Balance, QuotaSnapshot } from "./types";
 
+const Selection = Schema.Struct({
+  window: Schema.optionalKey(Schema.String),
+  currency: Schema.optionalKey(Schema.String),
+});
+
 export default Plugin.define({
+  stores: {
+    selection: Store.global(Selection, {}),
+  },
   i18n: {
     en: {
       week: "week",
@@ -42,8 +51,6 @@ export default Plugin.define({
       render(input) {
         const [snapshot, setSnapshot] = createSignal<QuotaSnapshot | null>(null);
         const [busy, setBusy] = createSignal(false);
-        const [selectedWindow, setSelectedWindow] = createSignal<string>();
-        const [selectedCurrency, setSelectedCurrency] = createSignal<string>();
         let refresh = () => {};
         createKeyed(
           () => {
@@ -78,8 +85,6 @@ export default Plugin.define({
               clearInterval(timer);
               setSnapshot(null);
               setBusy(false);
-              setSelectedWindow(undefined);
-              setSelectedCurrency(undefined);
               refresh = () => {};
             });
           },
@@ -96,14 +101,17 @@ export default Plugin.define({
           const quota = snapshot();
           if (quota?.mode !== "subscription" || !quota.windows.length) return;
           return (
-            quota.windows.find((item) => item.label === selectedWindow()) ??
+            quota.windows.find((item) => item.label === ctx.stores.selection.value.window) ??
             quota.windows.reduce((a, b) => (a.remaining <= b.remaining ? a : b))
           );
         });
         const visibleBalance = createMemo(() => {
           const quota = snapshot();
           if (quota?.mode !== "balance" || !quota.balances.length) return;
-          return quota.balances.find((item) => item.currency === selectedCurrency()) ?? quota.balances[0];
+          return (
+            quota.balances.find((item) => item.currency === ctx.stores.selection.value.currency) ??
+            quota.balances[0]
+          );
         });
         const display = () => {
           const quota = snapshot();
@@ -146,13 +154,19 @@ export default Plugin.define({
                     if (quota.balances.length > 1) {
                       const current = visibleBalance();
                       const index = quota.balances.findIndex((item) => item.currency === current?.currency);
-                      setSelectedCurrency(quota.balances[(index + 1) % quota.balances.length].currency);
+                      const next = quota.balances[(index + 1) % quota.balances.length];
+                      ctx.stores.selection.update((draft) => {
+                        draft.currency = next.currency;
+                      });
                     }
                     return;
                   }
                   if (quota?.mode !== "subscription" || !quota.windows.length) return;
                   const index = quota.windows.findIndex((item) => item.label === visibleWindow()?.label);
-                  setSelectedWindow(quota.windows[(index + 1) % quota.windows.length].label);
+                  const next = quota.windows[(index + 1) % quota.windows.length];
+                  ctx.stores.selection.update((draft) => {
+                    draft.window = next.label;
+                  });
                 }}
               >
                 <span

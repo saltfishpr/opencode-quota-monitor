@@ -22,7 +22,7 @@ bun run dev
 - `src/rpc.ts`：RPC `read` 的输入/输出 schema。
 - `src/types.ts`：核心数据类型和 `Provider` 接口。
 - `src/providers.ts`：各 provider 实现和 `providers` 数组。
-- `src/gui.tsx`：GUI Slot、按钮、Tooltip、60 秒刷新、订阅窗口选择和多币种余额切换（点击不刷新）。
+- `src/gui.tsx`：GUI Slot、按钮、Tooltip、60 秒刷新、订阅窗口选择和多币种余额切换（点击不刷新）；选择通过全局 store 持久化，切换会话和重启后保持。
 - `vite.config.ts`：通过 `@opencode/plugin/gui/vite` 构建 GUI，输出 `gui-experimental.cjs`。
 
 ## Provider 接口
