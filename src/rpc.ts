@@ -43,17 +43,21 @@ export const Quota = Rpc.define({
             properties: {
               mode: { const: "balance" },
               updatedAt: { type: "number" },
-              balance: {
-                type: "object",
-                properties: {
-                  remaining: { type: "number" },
-                  currency: { type: "string" },
+              balances: {
+                type: "array",
+                minItems: 1,
+                items: {
+                  type: "object",
+                  properties: {
+                    remaining: { type: "number" },
+                    currency: { type: "string" },
+                  },
+                  required: ["remaining", "currency"],
+                  additionalProperties: false,
                 },
-                required: ["remaining", "currency"],
-                additionalProperties: false,
               },
             },
-            required: ["mode", "balance", "updatedAt"],
+            required: ["mode", "balances", "updatedAt"],
             additionalProperties: false,
           },
         ],

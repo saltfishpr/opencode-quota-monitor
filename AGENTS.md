@@ -22,7 +22,7 @@ bun run dev
 - `src/rpc.ts`：RPC `read` 的输入/输出 schema。
 - `src/types.ts`：核心数据类型和 `Provider` 接口。
 - `src/providers.ts`：各 provider 实现和 `providers` 数组。
-- `src/gui.tsx`：GUI Slot、按钮、Tooltip、60 秒刷新和窗口选择。
+- `src/gui.tsx`：GUI Slot、按钮、Tooltip、60 秒刷新、订阅窗口选择和多币种余额切换（点击不刷新）。
 - `vite.config.ts`：通过 `@opencode/plugin/gui/vite` 构建 GUI，输出 `gui-experimental.cjs`。
 
 ## Provider 接口
@@ -46,7 +46,7 @@ interface Provider {
 ## 数据约定
 
 - `subscription`：返回 `{ mode: "subscription", windows: [{ label, remaining, resetsAt? }] }`，`remaining` 为 0–100 的剩余百分比。
-- `balance`：返回 `{ mode: "balance", balance: { remaining, currency } }`，`remaining` 为有限数值金额，允许零和欠费负数；`currency` 为大写 ISO 4217 币种代码，例如 `USD`、`CNY`。
+- `balance`：返回 `{ mode: "balance", balances: [{ remaining, currency }] }`，`remaining` 为有限数值金额，允许零和欠费负数；`currency` 为大写 ISO 4217 币种代码，例如 `USD`、`CNY`。`balances` 至少包含一项，数组顺序即按钮切换顺序，GUI 默认显示第一项。
 
 同一个 provider 可以根据凭据支持不同计费模式。认证方式与计费模式相互独立，例如 Copilot 的 key 查询订阅额度。
 
@@ -58,7 +58,7 @@ interface Provider {
 
 DeepSeek 使用 API key，以 Bearer 认证调用 [`GET /user/balance`](https://api-docs.deepseek.com/zh-cn/api/get-user-balance)。
 
-解析 `balance_infos`，按数组顺序取第一条 `currency` 为 `CNY` 或 `USD` 且 `total_balance` 可解析为有限数值的记录。`total_balance` 包含赠金和充值余额；不同币种不合并。`is_available` 不参与判断：即使为 `false`，有效余额仍会显示，包括零和负数。缺失或无效金额视为无数据。
+解析 `balance_infos`，按数组顺序收集所有 `currency` 为 `CNY` 或 `USD` 且 `total_balance` 可解析为有限数值的记录，返回 `balances` 数组；不同币种不合并。`total_balance` 包含赠金和充值余额。`is_available` 不参与判断：即使为 `false`，有效余额仍会显示，包括零和负数。没有有效记录时返回 `undefined`。
 
 ## OpenCode Go
 

@@ -1,4 +1,4 @@
-import type { Provider, QuotaWindow } from "./types";
+import type { Balance, Provider, QuotaWindow } from "./types";
 
 function record(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
@@ -123,16 +123,20 @@ const deepseek: Provider = {
       url: "https://api.deepseek.com/user/balance",
       headers: { Authorization: `Bearer ${credential.key}` },
       parse(body) {
-        const balances = record(body).balance_infos;
-        if (!Array.isArray(balances)) return;
-        for (const value of balances) {
+        const entries = record(body).balance_infos;
+        if (!Array.isArray(entries)) return;
+        const balances: Balance[] = [];
+        for (const value of entries) {
           const item = record(value);
-          if (item.currency !== "CNY" && item.currency !== "USD") continue;
+          const currency = item.currency;
+          if (currency !== "CNY" && currency !== "USD") continue;
           if (typeof item.total_balance !== "string" || !item.total_balance.trim()) continue;
           const remaining = Number(item.total_balance);
           if (!Number.isFinite(remaining)) continue;
-          return { mode: "balance", balance: { remaining, currency: item.currency } };
+          balances.push({ remaining, currency });
         }
+        if (!balances.length) return;
+        return { mode: "balance", balances };
       },
     };
   },

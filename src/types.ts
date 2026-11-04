@@ -16,7 +16,9 @@ export type Balance = {
 };
 
 // Providers normalize upstream responses into one of these billing modes.
-export type QuotaData = { mode: "subscription"; windows: QuotaWindow[] } | { mode: "balance"; balance: Balance };
+export type QuotaData =
+  | { mode: "subscription"; windows: QuotaWindow[] }
+  | { mode: "balance"; balances: Balance[] };
 
 export type QuotaSnapshot = QuotaData & {
   // Time of the successful query, as a Unix timestamp in milliseconds.

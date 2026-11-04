@@ -43,6 +43,7 @@ export default Plugin.define({
         const [snapshot, setSnapshot] = createSignal<QuotaSnapshot | null>(null);
         const [busy, setBusy] = createSignal(false);
         const [selectedWindow, setSelectedWindow] = createSignal<string>();
+        const [selectedCurrency, setSelectedCurrency] = createSignal<string>();
         let refresh = () => {};
         createKeyed(
           () => {
@@ -78,6 +79,7 @@ export default Plugin.define({
               setSnapshot(null);
               setBusy(false);
               setSelectedWindow(undefined);
+              setSelectedCurrency(undefined);
               refresh = () => {};
             });
           },
@@ -98,17 +100,28 @@ export default Plugin.define({
             quota.windows.reduce((a, b) => (a.remaining <= b.remaining ? a : b))
           );
         });
+        const visibleBalance = createMemo(() => {
+          const quota = snapshot();
+          if (quota?.mode !== "balance" || !quota.balances.length) return;
+          return quota.balances.find((item) => item.currency === selectedCurrency()) ?? quota.balances[0];
+        });
         const display = () => {
           const quota = snapshot();
           if (!quota) return "";
-          if (quota.mode === "balance") return formatBalance(quota.balance);
+          if (quota.mode === "balance") {
+            const balance = visibleBalance();
+            return balance ? formatBalance(balance) : "";
+          }
           const item = visibleWindow();
           return item ? `${label(item.label)} ${Math.floor(item.remaining)}%` : "";
         };
         const title = () => {
           const quota = snapshot();
           if (!quota) return "";
-          if (quota.mode === "balance") return `${ctx.t("balance")}\n${formatBalance(quota.balance)}`;
+          if (quota.mode === "balance") {
+            const balance = visibleBalance();
+            return balance ? `${ctx.t("balance")}\n${formatBalance(balance)}` : "";
+          }
           const resetsAt = visibleWindow()?.resetsAt;
           return [
             ctx.t("remaining"),
@@ -127,11 +140,14 @@ export default Plugin.define({
               <ctx.ui.Button
                 variant="ghost-muted"
                 class="quota-monitor-button"
-                disabled={busy() && snapshot()?.mode === "balance"}
                 onClick={() => {
                   const quota = snapshot();
                   if (quota?.mode === "balance") {
-                    void refresh();
+                    if (quota.balances.length > 1) {
+                      const current = visibleBalance();
+                      const index = quota.balances.findIndex((item) => item.currency === current?.currency);
+                      setSelectedCurrency(quota.balances[(index + 1) % quota.balances.length].currency);
+                    }
                     return;
                   }
                   if (quota?.mode !== "subscription" || !quota.windows.length) return;
