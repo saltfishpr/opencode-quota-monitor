@@ -13,7 +13,7 @@ bun run dev
 
 - `bun run dev` 监听变更并重新构建。
 - 服务端入口为根目录 `index.ts`，它转发到 `src/index.ts`。
-- GUI 源文件为 `src/gui.tsx`，构建产物为根目录 `gui-experimental.cjs`；不要直接编辑产物。
+- GUI 源文件为 `src/gui.tsx`，构建产物为 `dist/gui-experimental.cjs`；不要直接编辑产物。
 - GUI Slot 为 `session.header`，排序值为 `5`。
 
 ## 代码结构
@@ -23,7 +23,7 @@ bun run dev
 - `src/types.ts`：核心数据类型和 `Provider` 接口。
 - `src/providers.ts`：各 provider 实现和 `providers` 数组。
 - `src/gui.tsx`：GUI Slot、按钮、Tooltip、60 秒刷新、订阅窗口选择和多币种余额切换（点击不刷新）；选择通过全局 store 持久化，切换会话和重启后保持。
-- `vite.config.ts`：通过 `@opencode/plugin/gui/vite` 构建 GUI，输出 `gui-experimental.cjs`。
+- `vite.config.ts`：通过 `@opencode/plugin/gui/vite` 构建 GUI，输出 `dist/gui-experimental.cjs`。
 
 ## Provider 接口
 
