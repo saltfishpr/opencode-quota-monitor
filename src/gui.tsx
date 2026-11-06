@@ -23,7 +23,7 @@ export default Plugin.define({
       balance: "API key balance",
       resets: "Resets",
     },
-    "zh-CN": {
+    zh: {
       week: "周",
       month: "月",
       premium: "高级",
