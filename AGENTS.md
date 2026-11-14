@@ -12,7 +12,6 @@ pnpm run dev
 ```
 
 - `pnpm run dev` 监听变更并重新构建。
-- 服务端入口为根目录 `index.ts`，转发到 `src/index.ts`。
 - GUI 源文件为 `src/gui.tsx`，构建产物为 `dist/gui-experimental.cjs`；不要直接编辑产物。
 - GUI Slot 为 `session.header`，排序值为 `5`。
 
