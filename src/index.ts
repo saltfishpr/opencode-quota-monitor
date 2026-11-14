@@ -4,7 +4,7 @@ import { Quota } from "./rpc";
 import type { QuotaSnapshot } from "./types";
 
 export default Plugin.define({
-  id: "quota-monitor",
+  id: "opencode-quota-monitor",
   async setup(ctx) {
     const registration = await ctx.rpc.register(Quota, {
       async read(input, { signal }): Promise<QuotaSnapshot | null> {

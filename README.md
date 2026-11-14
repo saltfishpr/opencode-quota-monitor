@@ -14,20 +14,18 @@ Quota Monitor 是 OpenCode Desktop 插件，在 Performance Meter 右侧显示�
 
 ## 安装
 
-构建需要 [Bun](https://bun.sh)。在项目根目录执行：
+适用于 OpenCode Desktop 2.2.5。仓库已包含构建好的插件。
 
-```sh
-bun install
-bun run build
-```
+将本目录的绝对路径加入 `~/.config/opencode/opencode.json` 或 `opencode.jsonc` 的 `plugins` 数组：
 
-将本目录的绝对路径加入 `~/.config/opencode/opencode.json` 的 `plugins` 数组：
-
-```json
+```jsonc
 {
+  "$schema": "https://opencode.ai/config.json",
   "plugins": ["/absolute/path/to/opencode-quota-monitor"]
 }
 ```
+
+保存后自动加载，无需重启或额外配置。可在 Settings → Extensions → Plugins 中停用插件。
 
 ## 使用
 
@@ -38,7 +36,7 @@ bun run build
 
 插件每分钟自动刷新。订阅模式默认显示剩余比例最低的窗口，余额模式默认显示第一种币种；手动切换的窗口或币种按应用保存，切换会话和重启后仍保持，provider 没有该窗口或币种时回退到默认值。
 
-## 说明
+## 行为与限制
 
 - **显示条件**：provider 不受支持、登录方式不兼容、无有效额度或查询失败时，组件隐藏。
 - **登录限制**：OpenAI 新版 token-sharing 登录无法读取额度；OpenAI/Anthropic 普通 API key 和 GitHub Enterprise 暂不支持。

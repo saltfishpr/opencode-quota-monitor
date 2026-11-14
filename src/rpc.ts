@@ -1,7 +1,7 @@
 import { Rpc } from "@opencode/plugin/rpc";
 
 export const Quota = Rpc.define({
-  id: "quota-monitor",
+  id: "opencode-quota-monitor",
   events: {},
   methods: {
     read: {

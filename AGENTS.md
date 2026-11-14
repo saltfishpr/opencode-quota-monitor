@@ -1,24 +1,25 @@
 # AGENTS.md
 
-本文件记录 Quota Monitor 的开发命令、代码结构、接口约定和实现细节。`README.md` 面向使用者，只保留功能、支持范围、显示交互和安装配置；修改文档时按此分工放置内容。
+`README.md` 面向使用者，记录功能、支持范围、显示交互和安装方式。本文件记录开发命令、代码结构、接口约定和实现细节。
 
 ## 构建与开发
 
 ```sh
-bun install
-bun run typecheck
-bun run build
-bun run dev
+pnpm install
+pnpm run typecheck
+pnpm run build
+pnpm run dev
 ```
 
-- `bun run dev` 监听变更并重新构建。
-- 服务端入口为根目录 `index.ts`，它转发到 `src/index.ts`。
+- `pnpm run dev` 监听变更并重新构建。
+- 服务端入口为根目录 `index.ts`，转发到 `src/index.ts`。
 - GUI 源文件为 `src/gui.tsx`，构建产物为 `dist/gui-experimental.cjs`；不要直接编辑产物。
 - GUI Slot 为 `session.header`，排序值为 `5`。
 
 ## 代码结构
 
-- `src/index.ts`：注册 `quota-monitor` RPC；读取当前 integration connection 和 credential；请求 provider usage；解析后附加 `updatedAt`，失败返回 `null`。
+- 插件 id 和 RPC id 均为 `opencode-quota-monitor`，与包名一致。
+- `src/index.ts`：注册 `opencode-quota-monitor` RPC；读取当前 integration connection 和 credential；请求 provider usage；解析后附加 `updatedAt`，失败返回 `null`。
 - `src/rpc.ts`：RPC `read` 的输入/输出 schema。
 - `src/types.ts`：核心数据类型和 `Provider` 接口。
 - `src/providers.ts`：各 provider 实现和 `providers` 数组。
